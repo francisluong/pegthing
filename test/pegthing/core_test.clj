@@ -144,3 +144,23 @@
     (is (= x-board-empty-2 (move-peg x-board-empty-2 2 1)))
     (is (= x-board-empty-2 (move-peg x-board-full 2 1)))
     (is (= x-board-empty-1 (move-peg x-board-full 1 2)))))
+
+(def board-4-rem (remove-peg (new-board 5) 4))
+
+(deftest valid-moves-test
+  (testing "with 4 removed"
+    (is (not (pegged? board-4-rem 4)))
+    (is (= {4 2} (valid-moves board-4-rem 1)))
+    (is (= {4 5} (valid-moves board-4-rem 6)))
+    (is (= {4 7} (valid-moves board-4-rem 11)))
+    (is (= {4 8} (valid-moves board-4-rem 13)))
+    (is (= {} (valid-moves board-4-rem 5)))
+    (is (= {} (valid-moves board-4-rem 8)))
+    (is (= {} (valid-moves board-4-rem 4)))
+    (is (= {} (valid-moves (remove-peg board-4-rem 1) 4)))))
+
+(deftest valid-move?-test
+  (testing "valid-move?"
+    (is (not (pegged? board-4-rem 4)))
+    (is (= 2 (valid-move? board-4-rem 1 4)))
+    (is (= nil (valid-move? board-4-rem 8 4)))))

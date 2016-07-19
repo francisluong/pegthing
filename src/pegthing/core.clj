@@ -106,3 +106,20 @@
   "remove peg from p1 and place it at p2"
   [board p1 p2]
   (place-peg (remove-peg board p1) p2))
+
+(defn valid-moves
+  "return a map of all valid moves for pos, where the key is the destination
+   and the value is the jumped position - taking into account wether destination
+   is pegged"
+  [board src-pos]
+  (into {}
+        (filter (fn [[dest-pos jumped-pos]]
+                    (and (not (pegged? board dest-pos))
+                         (pegged? board src-pos)
+                         (pegged? board jumped-pos)))
+                (get-in board [src-pos :connections]))))
+
+(defn valid-move?
+  "Return jumped position if the move from p1 to p2 is valid, nil otherwise"
+  [board p1 p2]
+  (get (valid-moves board p1) p2))
