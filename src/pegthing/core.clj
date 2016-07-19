@@ -86,3 +86,23 @@
     (reduce (fn [acc-board pos] (add-pos acc-board max-pos pos))
             initial-board
             (range 1 (inc max-pos)))))
+
+(defn pegged?
+  "Does the position have a peg in it?"
+  [board pos]
+  (get-in board [pos :pegged]))
+
+(defn remove-peg
+  "Take the peg at a given position out of the board"
+  [board pos]
+  (assoc-in board [pos :pegged] false))
+
+(defn place-peg
+  "Put a peg in the board at a given position"
+  [board pos]
+  (assoc-in board [pos :pegged] true))
+
+(defn move-peg
+  "remove peg from p1 and place it at p2"
+  [board p1 p2]
+  (place-peg (remove-peg board p1) p2))

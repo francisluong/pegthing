@@ -69,27 +69,78 @@
 
 (deftest add-pos-test
   (testing "add-pos"
-    (def x-board {1 {:pegged true, :connections {4 2, 6 3}}
-                  4 {:connections {1 2}}
-                  6 {:connections {1 3}}})
-    (is (= x-board (add-pos {} 15 1)))))
+    (def x-board-add-pos {1 {:pegged true, :connections {4 2, 6 3}}
+                          4 {:connections {1 2}}
+                          6 {:connections {1 3}}})
+    (is (= x-board-add-pos (add-pos {} 15 1)))))
+
+(def x-board-full {:row-count 5
+                    1 {:connections {4 2, 6 3}, :pegged true}
+                    2 {:connections {7 4, 9 5}, :pegged true}
+                    3 {:connections {8 5, 10 6}, :pegged true}
+                    4 {:connections {1 2, 6 5, 11 7, 13 8}, :pegged true}
+                    5 {:connections {12 8, 14 9}, :pegged true}
+                    6 {:connections {1 3, 4 5, 13 9, 15 10}, :pegged true}
+                    7 {:connections {2 4, 9 8}, :pegged true}
+                    8 {:connections {3 5, 10 9}, :pegged true}
+                    9 {:connections {2 5, 7 8}, :pegged true}
+                    10 {:connections {3 6, 8 9}, :pegged true}
+                    11 {:connections {4 7, 13 12}, :pegged true}
+                    12 {:connections {5 8, 14 13}, :pegged true}
+                    13 {:connections {4 8, 6 9, 11 12, 15 14}, :pegged true}
+                    14 {:connections {5 9, 12 13}, :pegged true}
+                    15 {:connections {6 10, 13 14}, :pegged true}})
+
+(def x-board-empty-1 {:row-count 5
+                      1 {:connections {4 2, 6 3}, :pegged false}
+                      2 {:connections {7 4, 9 5}, :pegged true}
+                      3 {:connections {8 5, 10 6}, :pegged true}
+                      4 {:connections {1 2, 6 5, 11 7, 13 8}, :pegged true}
+                      5 {:connections {12 8, 14 9}, :pegged true}
+                      6 {:connections {1 3, 4 5, 13 9, 15 10}, :pegged true}
+                      7 {:connections {2 4, 9 8}, :pegged true}
+                      8 {:connections {3 5, 10 9}, :pegged true}
+                      9 {:connections {2 5, 7 8}, :pegged true}
+                      10 {:connections {3 6, 8 9}, :pegged true}
+                      11 {:connections {4 7, 13 12}, :pegged true}
+                      12 {:connections {5 8, 14 13}, :pegged true}
+                      13 {:connections {4 8, 6 9, 11 12, 15 14}, :pegged true}
+                      14 {:connections {5 9, 12 13}, :pegged true}
+                      15 {:connections {6 10, 13 14}, :pegged true}})
+
+(def x-board-empty-2 {:row-count 5
+                      1 {:connections {4 2, 6 3}, :pegged true}
+                      2 {:connections {7 4, 9 5}, :pegged false}
+                      3 {:connections {8 5, 10 6}, :pegged true}
+                      4 {:connections {1 2, 6 5, 11 7, 13 8}, :pegged true}
+                      5 {:connections {12 8, 14 9}, :pegged true}
+                      6 {:connections {1 3, 4 5, 13 9, 15 10}, :pegged true}
+                      7 {:connections {2 4, 9 8}, :pegged true}
+                      8 {:connections {3 5, 10 9}, :pegged true}
+                      9 {:connections {2 5, 7 8}, :pegged true}
+                      10 {:connections {3 6, 8 9}, :pegged true}
+                      11 {:connections {4 7, 13 12}, :pegged true}
+                      12 {:connections {5 8, 14 13}, :pegged true}
+                      13 {:connections {4 8, 6 9, 11 12, 15 14}, :pegged true}
+                      14 {:connections {5 9, 12 13}, :pegged true}
+                      15 {:connections {6 10, 13 14}, :pegged true}})
 
 (deftest new-board-test
   (testing "new board"
-    (def x-board {:row-count 5
-                  1 {:connections {4 2, 6 3}, :pegged true}
-                  2 {:connections {7 4, 9 5}, :pegged true}
-                  3 {:connections {8 5, 10 6}, :pegged true}
-                  4 {:connections {1 2, 6 5, 11 7, 13 8}, :pegged true}
-                  5 {:connections {12 8, 14 9}, :pegged true}
-                  6 {:connections {1 3, 4 5, 13 9, 15 10}, :pegged true}
-                  7 {:connections {2 4, 9 8}, :pegged true}
-                  8 {:connections {3 5, 10 9}, :pegged true}
-                  9 {:connections {2 5, 7 8}, :pegged true}
-                  10 {:connections {3 6, 8 9}, :pegged true}
-                  11 {:connections {4 7, 13 12}, :pegged true}
-                  12 {:connections {5 8, 14 13}, :pegged true}
-                  13 {:connections {4 8, 6 9, 11 12, 15 14}, :pegged true}
-                  14 {:connections {5 9, 12 13}, :pegged true}
-                  15 {:connections {6 10, 13 14}, :pegged true}})
-    (is (= x-board (new-board 5)))))
+    (is (= x-board-full (new-board 5)))))
+
+(deftest peg-ops-test
+  (testing "pegged?"
+    (is (= false (pegged? x-board-empty-1 1)))
+    (is (= true (pegged? x-board-empty-1 2))))
+  (testing "remove-peg"
+    (is (= x-board-empty-1 (remove-peg x-board-full 1)))
+    (is (= x-board-empty-1 (remove-peg x-board-empty-1 1))))
+  (testing "place-peg"
+    (is (= x-board-full (place-peg x-board-empty-1 1)))
+    (is (= x-board-full (place-peg x-board-full 1))))
+  (testing "move-peg"
+    (is (= x-board-empty-2 (move-peg x-board-empty-1 2 1)))
+    (is (= x-board-empty-2 (move-peg x-board-empty-2 2 1)))
+    (is (= x-board-empty-2 (move-peg x-board-full 2 1)))
+    (is (= x-board-empty-1 (move-peg x-board-full 1 2)))))
