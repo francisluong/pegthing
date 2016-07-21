@@ -123,3 +123,15 @@
   "Return jumped position if the move from p1 to p2 is valid, nil otherwise"
   [board p1 p2]
   (get (valid-moves board p1) p2))
+
+(defn make-move
+  "Move peg from p1 to p2, removing jumped peg"
+  [board p1 p2]
+  (if-let [jumped (valid-move? board p1 p2)]
+    (move-peg (remove-peg board jumped) p1 p2)))
+
+(defn can-move?
+  "Truthy if any of the pegged positions have valid moves?"
+  [board]
+  (some (comp not-empty (partial valid-moves board))
+        (map first (filter #(get (second %) :pegged) board)))) ;; all pegged positions

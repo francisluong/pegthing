@@ -145,7 +145,14 @@
     (is (= x-board-empty-2 (move-peg x-board-full 2 1)))
     (is (= x-board-empty-1 (move-peg x-board-full 1 2)))))
 
-(def board-4-rem (remove-peg (new-board 5) 4))
+
+(defn board-missing
+  [empty-positions]
+  (reduce (fn [board rem-pos] (remove-peg board rem-pos))
+          (new-board 5)
+          empty-positions))
+
+(def board-4-rem (board-missing [4]))
 
 (deftest valid-moves-test
   (testing "with 4 removed"
@@ -164,3 +171,34 @@
     (is (not (pegged? board-4-rem 4)))
     (is (= 2 (valid-move? board-4-rem 1 4)))
     (is (= nil (valid-move? board-4-rem 8 4)))))
+
+(deftest make-move-test
+  (testing "make-move"
+    (is (= (board-missing [1 2]) (make-move board-4-rem 1 4)))
+    (is (= (board-missing [1 4 7]) (make-move (board-missing [1 2]) 7 2))))
+  (testing "make-move invalid move"
+    (is (= nil (make-move (board-missing [1 2]) 1 4)))))
+
+(deftest can-move-test
+  (testing "can-move"
+    (is (can-move? (board-missing [1])))
+    (is (can-move? (board-missing [1 2 3 4 5 6 7 8 9 11 12 13 14]))))
+  (testing "cant-move"
+    (is (not (can-move? (new-board 5))))
+    (is (not (can-move? (board-missing [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15])))))
+  (testing "internals"
+    (testing "tuples from filter"
+      (is (=  [[1 {:connections {4 2, 6 3}, :pegged true}]
+               [2 {:connections {7 4, 9 5}, :pegged false}]]
+              (filter
+                  (fn [x] x)
+                  {1 {:connections {4 2, 6 3}, :pegged true}
+                   2 {:connections {7 4, 9 5}, :pegged false}}))))
+    (testing "first and second and get"
+      (is (= 1 (first [1 {:connections {4 2, 6 3}, :pegged true}])))
+      (is (= {:connections {4 2, 6 3}, :pegged true}
+             (second [1 {:connections {4 2, 6 3}, :pegged true}])))
+      (is (= true (get {:connections {4 2, 6 3}, :pegged true} :pegged))))
+    (testing "partial"
+      (let [add-one (partial + 1)]
+        (is (= 2 (add-one 1)))))))
