@@ -193,7 +193,8 @@
               (filter
                   (fn [x] x)
                   {1 {:connections {4 2, 6 3}, :pegged true}
-                   2 {:connections {7 4, 9 5}, :pegged false}}))))
+                   2 {:connections {7 4, 9 5}, :pegged false}})))
+      (is (= [1 3 5] (filter odd? (range 6)))))
     (testing "first and second and get"
       (is (= 1 (first [1 {:connections {4 2, 6 3}, :pegged true}])))
       (is (= {:connections {4 2, 6 3}, :pegged true}
@@ -202,3 +203,35 @@
     (testing "partial"
       (let [add-one (partial + 1)]
         (is (= 2 (add-one 1)))))))
+
+(deftest letters-test
+  (testing "letters"
+    (def x-letters ["a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"])
+    (is (= x-letters letters))))
+
+(deftest render-pos-test
+  (testing "render-pos-internals"
+    (is (= \b (nth "abc" 1)))
+    (is (= "c" (nth ["a" "b" "c"] 2))))
+  (testing "colorize"
+    (is (not (= "0" (colorize "0" :blue)))))
+  (testing "render-pos"
+    (is (= (str "a" (colorize "-" :red)) (render-pos (board-missing [1]) 1)))
+    (is (= (str "b" (colorize "0" :blue)) (render-pos (board-missing [1]) 2)))
+    (is (= (str "a" (colorize "0" :blue)) (render-pos (board-missing [2]) 1)))))
+
+(deftest row-positions-test
+  (testing "row-positions"
+    (is (= [1] (row-positions 1)))
+    (is (= [2 3] (row-positions 2)))
+    (is (= [4 5 6] (row-positions 3)))
+    (is (= [7 8 9 10] (row-positions 4)))
+    (is (= [11 12 13 14 15] (row-positions 5))))
+  (testing "row-positions-internals"
+    (is (= 0 (dec 1)))
+    (is (= nil (row-tri 0)))
+    (is (= 1 (row-tri 1)))
+    (is (= 0 (or nil 0)))
+    (is (= 4 (dec 5)))
+    (is (= 10 (row-tri 4)))
+    (is (= 10 (or (row-tri (dec 5)) 0)))))
