@@ -209,16 +209,19 @@
     (def x-letters ["a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"])
     (is (= x-letters letters))))
 
+(def empty-colored (colorize "-" :red))
+(def pegged-colored (colorize "0" :blue))
+
 (deftest render-pos-test
   (testing "render-pos-internals"
     (is (= \b (nth "abc" 1)))
     (is (= "c" (nth ["a" "b" "c"] 2))))
   (testing "colorize"
-    (is (not (= "0" (colorize "0" :blue)))))
+    (is (not (= "0" pegged-colored))))
   (testing "render-pos"
-    (is (= (str "a" (colorize "-" :red)) (render-pos (board-missing [1]) 1)))
-    (is (= (str "b" (colorize "0" :blue)) (render-pos (board-missing [1]) 2)))
-    (is (= (str "a" (colorize "0" :blue)) (render-pos (board-missing [2]) 1)))))
+    (is (= (str "a" empty-colored) (render-pos (board-missing [1]) 1)))
+    (is (= (str "b" pegged-colored) (render-pos (board-missing [1]) 2)))
+    (is (= (str "a" pegged-colored) (render-pos (board-missing [2]) 1)))))
 
 (deftest row-positions-test
   (testing "row-positions"
@@ -235,3 +238,33 @@
     (is (= 4 (dec 5)))
     (is (= 10 (row-tri 4)))
     (is (= 10 (or (row-tri (dec 5)) 0)))))
+
+(deftest row-padding-test
+  (testing "row-padding"
+    (is (= "      " (row-padding 1 5)))
+    (is (= "     " (row-padding 2 5)))
+    (is (= "   " (row-padding 3 5)))
+    (is (= "  " (row-padding 4 5)))
+    (is (= "" (row-padding 5 5)))))
+
+(deftest render-row-test
+  (testing "render row"
+    (is (= (str "      a" empty-colored) (render-row (board-missing [1]) 1)))
+    (is (= (str "     b" pegged-colored " c" pegged-colored)
+           (render-row (board-missing [1]) 2))))
+  (testing "render-row internals"
+    (is (= 5 (:row-count (board-missing [1]))))))
+
+(deftest print-board-test
+  (testing "print-board"
+    (is (= nil (print-board (board-missing [1]))))))
+
+(deftest letter-pos-test
+  (testing "letter->pos"
+    (is (= 1 (letter->pos "a")))
+    (is (= 2 (letter->pos "b")))
+    (is (= 15 (letter->pos "o")))))
+
+(deftest characters-as-strings-test
+  (testing "characters-as-strings"
+    (is (= ["a" "b"] (characters-as-strings "a  b")))))
